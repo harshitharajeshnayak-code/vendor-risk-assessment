@@ -1,11 +1,13 @@
-from services.chroma_client import add_documents
+from flask import Flask
+from routes.describe import describe_bp
+from routes.recommend import recommend_bp
+from routes.generate_report import generate_report_bp
 
-docs = [
-    "Vendor risk increases when compliance is low",
-    "Financial instability is a key vendor risk factor",
-    "Cybersecurity weaknesses can expose sensitive data",
-    "Poor vendor performance affects business operations",
-    "Lack of compliance leads to legal risks"
-]
+app = Flask(__name__)
 
-add_documents(docs)
+app.register_blueprint(describe_bp)
+app.register_blueprint(recommend_bp)
+app.register_blueprint(generate_report_bp)
+
+if __name__ == "__main__":
+    app.run(debug=True, port=5000)
