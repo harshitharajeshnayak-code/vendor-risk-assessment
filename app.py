@@ -1,21 +1,11 @@
-from flask import Flask, jsonify
-from routes.describe import describe_bp
-from routes.recommend import recommend_bp
+from services.chroma_client import add_documents
 
-app = Flask(__name__)
+docs = [
+    "Vendor risk increases when compliance is low",
+    "Financial instability is a key vendor risk factor",
+    "Cybersecurity weaknesses can expose sensitive data",
+    "Poor vendor performance affects business operations",
+    "Lack of compliance leads to legal risks"
+]
 
-app.register_blueprint(describe_bp)
-app.register_blueprint(recommend_bp)
-
-@app.route("/health")
-def health():
-    return jsonify({"status": "AI running"})
-
-
-@app.route("/")
-def home():
-    return "Flask is running"
-
-
-if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+add_documents(docs)
