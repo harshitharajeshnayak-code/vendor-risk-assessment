@@ -2,7 +2,7 @@ package com.internship.tool.service;
 
 import org.springframework.stereotype.Service;
 import com.internship.tool.entity.Vendor;
-
+import org.springframework.scheduling.annotation.Async;
 @Service
 public class VendorRiskService {
 
