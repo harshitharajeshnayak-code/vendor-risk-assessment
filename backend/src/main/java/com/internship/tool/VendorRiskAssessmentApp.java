@@ -1,9 +1,13 @@
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
-@EnableCaching   // <-- this activates Spring’s caching mechanism
+@EnableCaching 
+@SpringBootApplication
+@EnableCaching
+@EnableAsync// <-- this activates Spring’s caching mechanism
 public class VendorRiskAssessmentApp {
     public static void main(String[] args) {
         SpringApplication.run(VendorRiskAssessmentApp.class, args);
