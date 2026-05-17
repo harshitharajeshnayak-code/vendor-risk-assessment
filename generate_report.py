@@ -1,59 +1,46 @@
-from flask import Blueprint, request, jsonify
-from datetime import datetime
-from services.groq_client import call_groq
+from flask import Blueprint, Response, request
 import json
+import time
 
-generate_report_bp = Blueprint("generate_report", __name__)
+generate_report_bp = Blueprint(
+    "generate_report",
+    __name__
+)
 
-@generate_report_bp.route("/generate-report", methods=["POST"])
+@generate_report_bp.route(
+    "/generate-report",
+    methods=["GET"]
+)
 def generate_report():
-    try:
-        data = request.get_json()
 
-        if not data:
-            return jsonify({"error": "Input JSON is required"}), 400
+    text = request.args.get("input", "")
 
-        vendor_name = data.get("vendor_name", "Unknown Vendor")
-        issue = data.get("issue", "")
-        category = data.get("category", "")
-        risk_level = data.get("risk_level", "")
-        risk_score = data.get("risk_score", "")
+    report = f"""
+Executive Summary:
+Vendor risk detected.
 
-        if not issue:
-            return jsonify({"error": "Issue field is required"}), 400
+Overview:
+{text}
 
-        prompt = f"""
-        You are an expert vendor risk analyst.
+Recommendations:
+1. Review vendor contract
+2. Monitor delays
+3. Conduct audit
+"""
 
-        Generate a professional vendor risk assessment report in JSON format.
+    def event_stream():
 
-        Return ONLY valid JSON with this exact structure:
-        {{
-          "title": "string",
-          "executive_summary": "string",
-          "overview": "string",
-          "top_items": ["string", "string", "string"],
-          "recommendations": ["string", "string", "string"]
-        }}
+        words = report.split()
 
-        Vendor Details:
-        Vendor Name: {vendor_name}
-        Issue: {issue}
-        Category: {category}
-        Risk Level: {risk_level}
-        Risk Score: {risk_score}
-        """
+        for word in words:
 
-        response = call_groq(prompt)
+            yield f"data: {json.dumps({'token': word + ' '})}\n\n"
 
-        cleaned = response.strip().replace("```json", "").replace("```", "")
-        report_json = json.loads(cleaned)
+            time.sleep(0.1)
 
-        report_json["generated_at"] = datetime.utcnow().isoformat()
+        yield "data: [DONE]\n\n"
 
-        return jsonify(report_json), 200
-
-    except json.JSONDecodeError:
-        return jsonify({"error": "Invalid AI response format"}), 500
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    return Response(
+        event_stream(),
+        content_type="text/event-stream"
+    )
