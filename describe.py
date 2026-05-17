@@ -1,30 +1,18 @@
 from flask import Blueprint, request, jsonify
+from datetime import datetime
 
 describe_bp = Blueprint("describe", __name__)
 
-def analyze_risk(text):
-    text = text.lower()
-
-    if "delay" in text or "late" in text:
-        return "High Risk"
-    elif "average" in text:
-        return "Medium Risk"
-    else:
-        return "Low Risk"
-
-
 @describe_bp.route("/describe", methods=["POST"])
 def describe():
-    data = request.get_json(force=True)
 
-    if not data or "text" not in data:
-        return jsonify({"error": "Text is required"}), 400
+    data = request.json
 
-    text = data["text"]
-    risk = analyze_risk(text)
+    print("DATA:", data)
+
+    description = data["description"]
 
     return jsonify({
-        "input": text,
-        "risk_level": risk,
-        "message": "Risk analysis completed"
+        "risk_analysis": f"Risk found: {description}",
+        "generated_at": datetime.now().isoformat()
     })
