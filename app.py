@@ -4,8 +4,16 @@ from routes.generate_report import generate_report_bp
 from routes.analyse_document import analyse_document_bp
 from routes.batch_process import batch_process_bp
 
+from services.model_loader import get_model
+
 app = Flask(__name__)
 
+# Load AI Model
+model = get_model()
+
+print("AI Model Loaded Successfully")
+
+# Register Blueprints
 app.register_blueprint(generate_report_bp)
 app.register_blueprint(analyse_document_bp)
 app.register_blueprint(batch_process_bp)
